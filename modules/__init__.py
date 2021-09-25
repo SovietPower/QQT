@@ -9,4 +9,5 @@ from .Item import *
 from .Map import *
 from .Player import *
 from .Start import *
+from .Text import *
 

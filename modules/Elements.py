@@ -30,28 +30,135 @@ GRID_SCALE = cfg.GRID_SCALE
 GRID_X, GRID_Y = cfg.GRID_X, cfg.GRID_Y
 GRID_OFFSET_X, GRID_OFFSET_Y = cfg.GRID_OFFSET_X, cfg.GRID_OFFSET_Y
 
-hash_table = {
-	1: lambda: Wall_sea1(),
-	2: lambda: Stone_sea1()
+Element_Table = {
+	'sea': {
+		'w1': 'Wall_Sea1',
+		'w2': 'Wall_Sea2',
+
+		's1': 'Stone_Sea1',
+		's2': 'Stone_Sea2',
+		's3': 'Stone_Sea3',
+		's4': 'Stone_Sea4',
+		's5': 'Stone_Sea5',
+		's5': 'Stone_Sea5',
+		's6': 'Stone_Sea6',
+		's7': 'Stone_Sea7',
+		's8': 'Stone_Sea8',
+		's9': 'Stone_Sea9',
+		's10': 'Stone_Sea10',
+		's11': 'Stone_Sea11',
+		's12': 'Stone_Sea12',
+
+		'd1': 'Door_Sea1'
+	}
 }
-def ID_to_Element(id):
-	return hash_table[id]
+def ID_to_Element(mode, id, grid_pos=(0,0)):
+	s = Element_Table[mode][id]+'(grid_pos)'
+	return eval(s)
+
+class Wall(Destroyable):
+	def __init__(self, grid_pos=(0,0)) -> None:
+		super().__init__()
+		self.grid_pos = grid_pos # 若未定义pos，需进行设置
+		self.pos = Grid_to_XY(grid_pos)
+		self.item = Rand_Item(self.grid_pos)
+
+class Stone(NotDestroyable):
+	def __init__(self, grid_pos=(0,0)) -> None:
+		super().__init__()
+		self.grid_pos = grid_pos # 若未定义pos，需进行设置
+		self.pos = Grid_to_XY(grid_pos)
 
 
-class Wall_sea1(Destroyable):
+class Wall_Sea1(Wall):
 	def __init__(self, grid_pos=(0,0), type='wall_sea1') -> None:
-		super().__init__()
+		super().__init__(grid_pos)
 		self.image = cfg.element_image[type]
-		self.grid_pos = grid_pos # 若未定义pos，需进行设置
-		self.pos = Grid_to_xy(grid_pos)
-		self.item = rand_item(self.grid_pos)
+		self.image_offset = (-5, -12)
 
-class Stone_sea1(NotDestroyable):
-	def __init__(self, grid_pos=(0,0), type='stone_sea1') -> None:
-		super().__init__()
+class Wall_Sea2(Wall):
+	def __init__(self, grid_pos=(0,0), type='wall_sea2') -> None:
+		super().__init__(grid_pos)
 		self.image = cfg.element_image[type]
-		self.grid_pos = grid_pos # 若未定义pos，需进行设置
-		self.pos = Grid_to_xy(grid_pos)
+		self.image_offset = (-6, -12)
+
+class Stone_Sea1(Stone):
+	def __init__(self, grid_pos=(0,0), type='stone_sea1') -> None:
+		super().__init__(grid_pos)
+		self.image = cfg.element_image[type]
+		self.image_offset = (-5, -10)
+
+class Stone_Sea2(Stone):
+	def __init__(self, grid_pos=(0,0), type='stone_sea2') -> None:
+		super().__init__(grid_pos)
+		self.image = cfg.element_image[type]
+		self.image_offset = (-5, -10)
+
+class Stone_Sea3(Stone):
+	def __init__(self, grid_pos=(0,0), type='stone_sea3') -> None:
+		super().__init__(grid_pos)
+		self.image = cfg.element_image[type]
+		self.image_offset = (-2, -11)
+
+class Stone_Sea4(Stone):
+	def __init__(self, grid_pos=(0,0), type='stone_sea4') -> None:
+		super().__init__(grid_pos)
+		self.image = cfg.element_image[type]
+		self.image_offset = (-5, -14)
+
+class Stone_Sea5(Stone):
+	def __init__(self, grid_pos=(0,0), type='stone_sea5') -> None:
+		super().__init__(grid_pos)
+		self.image = cfg.element_image[type]
+		self.image_offset = (-5, -10)
+
+class Stone_Sea6(Stone):
+	def __init__(self, grid_pos=(0,0), type='stone_sea6') -> None:
+		super().__init__(grid_pos)
+		self.image = cfg.element_image[type]
+		self.image_offset = (-5, -10)
+
+class Stone_Sea7(Stone):
+	def __init__(self, grid_pos=(0,0), type='stone_sea7') -> None:
+		super().__init__(grid_pos)
+		self.image = cfg.element_image[type]
+		self.image_offset = (-2, -15)
+
+class Stone_Sea8(Stone):
+	def __init__(self, grid_pos=(0,0), type='stone_sea8') -> None:
+		super().__init__(grid_pos)
+		self.image = cfg.element_image[type]
+		self.image_offset = (-2, -16)
+
+class Stone_Sea9(Stone):
+	def __init__(self, grid_pos=(0,0), type='stone_sea9') -> None:
+		super().__init__(grid_pos)
+		self.image = cfg.element_image[type]
+		self.image_offset = (-2, -20)
+
+class Stone_Sea10(Stone):
+	def __init__(self, grid_pos=(0,0), type='stone_sea10') -> None:
+		super().__init__(grid_pos)
+		self.image = cfg.element_image[type]
+		self.image_offset = (-2, -20)
+
+class Stone_Sea11(Stone):
+	def __init__(self, grid_pos=(0,0), type='stone_sea11') -> None:
+		super().__init__(grid_pos)
+		self.image = cfg.element_image[type]
+		self.image_offset = (-2, -5)
+
+class Stone_Sea12(Stone):
+	def __init__(self, grid_pos=(0,0), type='stone_sea12') -> None:
+		super().__init__(grid_pos)
+		self.image = cfg.element_image[type]
+		self.image_offset = (-2, -15)
+
+class Door_Sea1(Stone):
+	def __init__(self, grid_pos=(0,0), type='door_sea1') -> None:
+		super().__init__(grid_pos)
+		self.image = cfg.element_image[type]
+		self.image_offset = (-2, -17)
 
 
 

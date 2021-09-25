@@ -31,13 +31,17 @@ import cfg
 
 
 hero_list = [k for k in cfg.hero_image.keys()]
-def random_hero():
+def Rand_Hero():
 	return hero_list[randint(0, len(hero_list)-1)]
+
+hero_colors = ['red']
+def Rand_Color():
+	return hero_colors[randint(0, len(hero_colors)-1)]
 
 class Hero(object):
 	def __init__(self, name=None, color=None):
-		if name==None: name=random_hero()
-		# if color==None: color = random_color()
+		if name==None: name=Rand_Hero()
+		if color==None: color = Rand_Color()
 		self.name, self.color = name, color
 
 

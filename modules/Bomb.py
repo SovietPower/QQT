@@ -20,11 +20,12 @@ pygame.init()
 
 from .Basic import *
 from .Element import *
+from .Item import *
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 PATH_FA = os.path.dirname(PATH)
 
-IMAGE_CHANGE_SPEED = 18 # 多少次变化后，改变泡泡图像
+IMAGE_CHANGE_SPEED = 18 # 18 # 多少次变化后，改变泡泡图像
 
 # ! 导入父目录的cfg，及部分常用信息
 sys.path.append(PATH_FA)
@@ -51,26 +52,32 @@ class Bomb(pygame.sprite.Sprite):
 	map_surface = None # 当前地图表面，用于摧毁地图元素、停止爆炸延伸
 	map_player = None # 当前玩家地图，处于攻击效果处的玩家都会受到伤害
 
-	def __init__(self, type, player, grid_pos, time=3):
+	def __init__(self, type, player, grid_pos, attack_val=1, time=3):
 		pygame.sprite.Sprite.__init__(self)
-		self.type = type
-		self.images = set_loaded_images(cfg.bomb_image[type])
-		self.image_sizes = cycle(((x.get_width(), x.get_height()) for x in cfg.bomb_image[type]))
 
-		self.image = next(self.images)
-		self.image_size = next(self.image_sizes)
+		# self.type = type
+		self.images = cycle(cfg.bomb_image[type])
+		self.image_sizes = cycle(cfg.bomb_image_size[type])
+
+		shadow_type = cfg.Bomb_to_Shadow_Image(type)
+		self.images_shadow = cycle(cfg.bomb_shadow_image[shadow_type])
+		self.image_shadow_sizes = cycle(cfg.bomb_shadow_image_size[shadow_type])
+
+		self.Image_Update()
+
 		self.rect = self.image.get_rect()
+		# self.move_cnt = IMAGE_CHANGE_SPEED
 
 		self.belong = player # 所属玩家
-		self.power = player.bomb_power
+		self.power = player.bomb_power # 攻击距离
+		self.attack_val = attack_val # 伤害（默认1）
 
-		self.x, self.y = Grid_to_xy(grid_pos)
+		self.x, self.y = Grid_to_XY(grid_pos) # x, y为所在格子右下角像素坐标。
 		self.x += GRID_SCALE; self.y += GRID_SCALE
 		self.grid_x, self.grid_y = grid_pos
 		self.bomb_queue = []
 
 		self.destroyed = False
-		self.move_cnt = IMAGE_CHANGE_SPEED
 
 		self.timer = Timer(time, self.Blast_pre)
 		self.timer.start()
@@ -108,10 +115,11 @@ class Bomb(pygame.sprite.Sprite):
 				Bomb.effect_map[x][y][2].update(screen)
 
 			'''此处为更新爆炸伤害'''
+			# ! 注意此处爆炸伤害只对可穿过元素生效（通过遍历爆炸效果区域）。不可穿过元素在遍历时生效。
 			if val:
 				for p in Bomb.map_player[x][y]:
 					p.Get_Attacked(val)
-				if isinstance(Bomb.map_surface[x][y], Destroyable):
+				if isinstance(Bomb.map_surface[x][y], Destroyable_Item):
 					Bomb.map_surface[x][y].Get_Attacked(val)
 
 			# 在此处而不是effect消失时移除位置，更优（应该）。
@@ -120,14 +128,22 @@ class Bomb(pygame.sprite.Sprite):
 				Bomb.effect_pos.remove((x, y))
 
 	'''实例方法'''
+	def Image_Update(self):
+		'''更新该炸弹的图像'''
+		self.move_cnt = IMAGE_CHANGE_SPEED
+		self.image = next(self.images)
+		self.image_size = next(self.image_sizes)
+		self.image_shadow = next(self.images_shadow)
+		self.image_shadow_size = next(self.image_shadow_sizes)
+
 	def update(self, screen):
-		'''更新某炸弹的图像'''
+		'''输出并更新该炸弹的图像'''
 		self.move_cnt -= 1
 		if not self.move_cnt:
-			self.move_cnt = IMAGE_CHANGE_SPEED
-			self.image = next(self.images)
-			self.image_size = next(self.image_sizes)
+			self.Image_Update()
+		screen.blit(self.image_shadow, (self.x-(GRID_SCALE+self.image_shadow_size[0])/2, self.y-self.image_shadow_size[1]/2))
 		screen.blit(self.image, (self.x-(GRID_SCALE+self.image_size[0])/2, self.y-self.image_size[1]))
+		# 多张图片的底部是对齐的。
 
 	def Blast_pre(self):
 		'''Blast(BFS)前的准备工作，及收尾工作'''
@@ -157,7 +173,7 @@ class Bomb(pygame.sprite.Sprite):
 
 		self.timer.cancel()
 		self.kill()
-		self.belong.bomb_rest+=1
+		self.belong.bomb_rest = min(self.belong.bomb_rest+1, self.belong.bomb_num) # 限制恢复糖泡边界，便于添加道具
 
 		self.Travel(queue, 'up', 0, -1)
 		self.Travel(queue, 'down', 0, 1)
@@ -166,21 +182,27 @@ class Bomb(pygame.sprite.Sprite):
 		# self.Bomb_down(); self.Bomb_left(); self.Bomb_up(); self.Bomb_right()
 		# self.bomb_queue.append(self)
 
-	def Travel(self, queue, towards, vx, vy): # 遍历爆炸范围
+	def Travel(self, queue, towards, vx, vy):
+		'''遍历爆炸范围。其中self为当前炸弹。'''
 		x, y = self.grid_x, self.grid_y
-		# x, y = self.grid_x+(self.power+1)*vx, self.grid_y+(self.power+1)*vy # 想改变进入顺序，优化图片断层，但用set遍历这就没有意义了
+		# x, y = self.grid_x+(self.power+1)*vx, self.grid_y+(self.power+1)*vy # 想改变进入顺序，优化图片断层，但用set遍历这就没有意义了。而且有限制爆炸范围的情况，不能直接倒序。
 		for i in range(1, self.power+1):
 			x+=vx; y+=vy
 			if x<1 or x>GRID_X or y<1 or y>GRID_Y: continue
-			if not self.map_bomb[x][y]:
-				type = int(i==self.power)
-				id = towards_to_id(towards, type)
-				if self.effect_map[x][y][id]: # 更新该处为最新的特效
-					self.effect_map[x][y][id].Delete()
-				self.effect_pos.add((x, y)) # 注意Delete完后再add
-				self.effect_map[x][y][id] = Bomb_Effect((x, y), id, towards, type=type)
+			if not isinstance(Bomb.map_surface[x][y], Destroyable) and not isinstance(Bomb.map_surface[x][y],NotDestroyable):
+				if not self.map_bomb[x][y]:
+					type = int(i==self.power)
+					id = towards_to_id(towards, type)
+					if self.effect_map[x][y][id]: # 更新该处为最新的特效
+						self.effect_map[x][y][id].Delete()
+					self.effect_pos.add((x, y)) # 注意Delete完后再add
+					self.effect_map[x][y][id] = Bomb_Effect((x, y), id, towards, type=type)
+				else:
+					queue.append(self.map_bomb[x][y])
 			else:
-				queue.append(self.map_bomb[x][y])
+				print(x, y, Bomb.map_surface[x][y])
+				Bomb.map_surface[x][y].Get_Attacked(self.attack_val)
+				break
 
 
 
@@ -189,7 +211,7 @@ class Bomb_Effect(pygame.sprite.Sprite):
 	def __init__(self, grid_pos, id, towards, type=0, power=1):
 		pygame.sprite.Sprite.__init__(self)
 
-		pos = Grid_to_xy(grid_pos)
+		pos = Grid_to_XY(grid_pos)
 		self.image = cfg.bomb_effect_image[towards][type]
 		self.pos = pos
 		self.grid_x, self.grid_y = grid_pos

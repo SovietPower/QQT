@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-'绘制地图'
+'''绘制开始界面'''
 
 import os, sys, pygame, random
 pygame.init()
@@ -16,7 +16,6 @@ from cfg import *
 # ! 字体加载
 
 # ! 图片加载
-background = pygame.image.load(os.path.join(PATH, 'pics\\background_pvz2.png'))
 
 # ! 音乐加载
 

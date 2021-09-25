@@ -29,7 +29,8 @@ GRID_OFFSET_X, GRID_OFFSET_Y = cfg.GRID_OFFSET_X, cfg.GRID_OFFSET_Y
 
 # ! 图片加载
 
-class Element():
+class Element(object):
+	'''地图元素或道具元素。'''
 	map = None
 
 	def __init__(self) -> None:
@@ -44,7 +45,7 @@ class Element():
 		self.canPassBombEffect, self.canHideBombEffect = 0, 0 # 通过/遮蔽火焰
 
 	def update(self, screen):
-		screen.blit(self.image, (self.pos[0]-self.image_offset[0], self.pos[1]-self.image_offset[1]))
+		screen.blit(self.image, (self.pos[0]+self.image_offset[0], self.pos[1]+self.image_offset[1]))
 
 
 class NotDestroyable(Element):
@@ -52,6 +53,8 @@ class NotDestroyable(Element):
 	def __init__(self) -> None:
 		super().__init__()
 
+	def Get_Attacked(self, val=1):
+		pass
 
 class Destroyable(Element):
 	'''可摧毁的地图元素。'''
@@ -63,11 +66,11 @@ class Destroyable(Element):
 
 		self.hp = 1 # 几次被摧毁
 		self.item = None # 隐藏的随机道具，可被设为None
-		# 并非所有Destroyable都有隐藏道具，比如道具类本身，默认值应为None
+		# 并非所有Destroyable都有隐藏道具，~~比如道具类本身~~（道具设为另一类Destroyable_Item）默认值应为None
 
 	def Get_Attacked(self, val=1):
 		self.hp -= val
-		if not self.hp:
+		if self.hp<=0:
 			self.Delete()
 
 	def Delete(self):
