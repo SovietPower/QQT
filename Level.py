@@ -243,7 +243,7 @@ class Level(object):
 	def Play_music(self):
 		print('Music Play!')
 		self.music.play()
-		# Timer(self.music.get_length()-3, self.End_music).start() # ! 下一首BGM
+		Timer(self.music.get_length()-3, self.End_music).start() # ! 下一首BGM
 	def End_music(self):
 		print('Music End!')
 		self.music.fadeout(3000)
