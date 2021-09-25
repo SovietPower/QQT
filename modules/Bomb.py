@@ -154,7 +154,7 @@ class Bomb(pygame.sprite.Sprite):
 		while head<len(self.bomb_queue):
 			self.bomb_queue[head].Blast(self.bomb_queue)
 			head+=1
-		cfg.Blast_music.play()
+		cfg.Blast_Sound.play()
 		for b in self.bomb_queue:
 			x, y = b.grid_x, b.grid_y
 			self.map_bomb[x][y] = None

@@ -129,12 +129,12 @@ class Level(object):
 		self.Update_screen()
 		self.screen.blit(cfg.ready_image, ((cfg.SCREEN_WIDTH-cfg.ready_image.get_width())/2, (cfg.SCREEN_HEIGHT-cfg.ready_image.get_height())/2))
 		pygame.display.flip()
-		pygame.time.wait(500) # 1200
+		pygame.time.wait(1200) # 1200
 
 		self.Update_screen()
 		self.screen.blit(cfg.go_image, ((cfg.SCREEN_WIDTH-cfg.go_image.get_width())/2, (cfg.SCREEN_HEIGHT-cfg.go_image.get_height())/2))
 		pygame.display.flip()
-		pygame.time.wait(500) # 800
+		pygame.time.wait(800) # 800
 
 		# Start
 		self.Play_music()
@@ -167,7 +167,7 @@ class Level(object):
 				self.map.bomb[x][y]=bomb
 				self.bomb_group.add(bomb)
 
-				cfg.Place_bomb_music.play()
+				cfg.Place_Bomb_Sound.play()
 
 	def Player_move(self, player, keys_pressed, up=pygame.K_UP, down=pygame.K_DOWN, left=pygame.K_LEFT, right=pygame.K_RIGHT, space=pygame.K_SPACE):
 		moving = 0
@@ -233,7 +233,7 @@ class Level(object):
 			cursor_image = Cursor_hand_image
 		else:
 			cursor_image = Cursor_hand_push_image
-			cfg.Click_music.play()
+			cfg.Click_Sound.play()
 		self.screen.blit(cursor_image, cursor_pos) # 如果要将图片放在鼠标正中心，还要减去宽度/高度除以2。
 
 		'''辅助信息输出'''
@@ -243,7 +243,7 @@ class Level(object):
 	def Play_music(self):
 		print('Music Play!')
 		self.music.play()
-		Timer(self.music.get_length()-3, self.End_music).start() # ! 下一首BGM
+		Timer(self.music.get_length()-3, self.End_music).start() # 下一首BGM
 	def End_music(self):
 		print('Music End!')
 		self.music.fadeout(3000)

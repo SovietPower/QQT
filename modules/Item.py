@@ -122,6 +122,7 @@ class Add_Bomb_Number(Item):
 			player.bomb_num += delta
 			player.bomb_rest += delta
 		self.Disappear()
+		cfg.Get_Item_Sound.play()
 
 class Add_Bomb_Power(Item):
 	'''增加糖泡威力'''
@@ -136,6 +137,7 @@ class Add_Bomb_Power(Item):
 		if delta:
 			player.bomb_power += delta
 		self.Disappear()
+		cfg.Get_Item_Sound.play()
 
 class Add_Speed(Item):
 	'''增加玩家速度'''
@@ -150,6 +152,7 @@ class Add_Speed(Item):
 		if delta:
 			player.speed += delta
 		self.Disappear()
+		cfg.Get_Item_Sound.play()
 
 class Random_Attr(Item):
 	'''随机改变玩家某属性'''
@@ -158,12 +161,12 @@ class Random_Attr(Item):
 		Init_Pos_Image(self, grid_pos, 'RandomAttr1')
 
 		if not inc: inc = randint(1, 2) # 注意默认参数赋值为random没用，会在定义时被确定
-		if randint(1, 5)<=5: inc*=-1 # 2/5
+		if randint(1, 5)<=2: inc*=-1 # 2/5
 		self.inc = inc # 增加数值
 
 	def Gotten(self, player):
 		x = randint(1, 3)
-		if x>=1:
+		if x==1:
 			delta = min(self.inc, player.max_bomb_num-player.bomb_num) if self.inc>0 else max(self.inc, 1-player.bomb_num)
 			# 注意对正负分别讨论。1为最小值。
 			if delta:
@@ -174,16 +177,20 @@ class Random_Attr(Item):
 			if delta:
 				player.bomb_power += delta
 		elif x==3:
+			self.inc *= SPEED_delta
 			delta = min(self.inc, player.max_speed-player.speed) if self.inc>0 else max(self.inc, 2-player.speed)
 			if delta:
 				player.speed += delta
 
 		self.Disappear()
+		cfg.Get_Item_Sound.play()
 
 
 class Slow(Item):
 	'''慢慢胶，踩到的人速度变为最慢，持续10s。可被香蕉皮清除效果。
-	注意同一个道具不允许多人同时获取，因为player只记录一个玩家！'''
+	注意同一个道具不允许多人同时获取，因为player只记录一个玩家！
+	# todo 生效与拾起（Gotten）应独立开。拾起会增加道具。
+	'''
 	def __init__(self, grid_pos=(0,0)) -> None:
 		super().__init__()
 		Init_Pos_Image(self, grid_pos, 'Slow1')

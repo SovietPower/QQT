@@ -49,11 +49,11 @@ Background_music = ( # 在Level初始化时加载
 )
 
 # ! 音效
-Blast_music = pygame.mixer.Sound(os.path.join(PATH, 'sound\\blast.wav'))
-Click_music = pygame.mixer.Sound(os.path.join(PATH, 'sound\\click.wav'))
-Get_item_music = pygame.mixer.Sound(os.path.join(PATH, 'sound\\get_item.wav'))
-Option_music = pygame.mixer.Sound(os.path.join(PATH, 'sound\\option.wav'))
-Place_bomb_music = pygame.mixer.Sound(os.path.join(PATH, 'sound\\place_bomb.wav'))
+Blast_Sound = pygame.mixer.Sound(os.path.join(PATH, 'sound\\blast.wav'))
+Click_Sound = pygame.mixer.Sound(os.path.join(PATH, 'sound\\click.wav'))
+Get_Item_Sound = pygame.mixer.Sound(os.path.join(PATH, 'sound\\get_item.wav'))
+Option_Sound = pygame.mixer.Sound(os.path.join(PATH, 'sound\\option.wav'))
+Place_Bomb_Sound = pygame.mixer.Sound(os.path.join(PATH, 'sound\\place_bomb.wav'))
 
 
 # ! 图片
